@@ -1,7 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("login");
     const tableBody = document.getElementById("table-body");
-    let counter = 1;
+    const clearbut = document.getElementById("clear-button");
+
+    clearbut.addEventListener("click", () => {
+        localStorage.clear();
+        const tableRows = document.querySelectorAll("#table-body tr");
+        tableRows.forEach(row => {
+            row.innerHTML = ""; 
+        });
+    });
+
+    let counter = parseInt(localStorage.getItem('counter')) || 1; 
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -10,8 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const surname = document.getElementById("surname").value.trim();
         const ageInput = document.getElementById("age");
         const age = parseInt(ageInput.value, 10);
-
-        console.log(`Name=${name}, Surname=${surname}, Age=${age}`);
 
         if (age < 18 || age > 125) {
             alert("Age must be between 18 and 125");
@@ -24,33 +32,40 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const studentData = { name, surname, age };
+        addTableRow(studentData);
+
+        save(name, surname, age, counter);
+        form.reset();
+
+        counter++;
+        localStorage.setItem('counter', counter); 
+    });
+
+    function addTableRow(studentData) {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${counter}</td>
-            <td>${name}</td>
-            <td>${surname}</td>
-            <td>${age}</td>
+            <td>${studentData.name}</td>
+            <td>${studentData.surname}</td>
+            <td>${studentData.age}</td>
         `;
-
-        save(name, surname, age, counter);
-
         tableBody.appendChild(row);
+    }
 
-        form.reset();
-
-        let studentData = localStorage.getItem(`student${counter}`);
-        if (studentData) {
-            const student = JSON.parse(studentData);
-            console.log(`Student ${counter} data:`, student);
-        } else {
-            console.log(`No data stored under the key 'student${counter}'`);
+    function save(name, surname, age, counter) {
+        const data = { name, surname, age };
+        localStorage.setItem(`student${counter}`, JSON.stringify(data));
+    }
+    function loadFromLocalStorage() {
+        for (let i = 1; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith("student")) {
+                const studentData = JSON.parse(localStorage.getItem(key));
+                addTableRow(studentData);
+            }
         }
-        counter++;
-    });
+    }
+
+    loadFromLocalStorage();
 });
-
-function save(name, surname, age, counter) {
-    const data = { name, surname, age };
-    localStorage.setItem(`student${counter}`, JSON.stringify(data)); // i steal this part of code
-}
-
