@@ -1,0 +1,30 @@
+
+node_modules/
+
+*.log
+
+.env
+
+dist/
+build/
+tmp/
+temp/
+
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+.DS_Store          # macOS
+Thumbs.db          # Windows
+ehthumbs.db        # Windows
+Desktop.ini        # Windows
+$RECYCLE.BIN/      # Windows
+*~                 # Linux
+
+*.swp
+*.tmp
+*.temp
+
+yarn.lock
+package-lock.json
